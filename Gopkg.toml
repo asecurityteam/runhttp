@@ -1,0 +1,15 @@
+[[constraint]]
+  name = "github.com/asecurityteam/settings"
+  branch = "master"
+
+[[constraint]]
+  name = "github.com/asecurityteam/logevent"
+  version = "1.0.4"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/rs/xstats"
+
+[prune]
+  go-tests = true
+  unused-packages = true
