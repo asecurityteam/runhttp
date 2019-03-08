@@ -96,6 +96,7 @@ func TestNew(t *testing.T) {
 			t.Log(err.Error())
 			continue
 		}
+		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			t.Log(resp.StatusCode)
 			continue
