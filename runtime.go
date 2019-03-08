@@ -28,8 +28,7 @@ func (r *Runtime) Run() error {
 	exit := r.Exit()
 	server := r.Server()
 	cs := r.ConnState()
-	// cs.Stat = xstats.Copy(r.Stats)
-	cs.Stat = r.Stats
+	cs.Stat = xstats.Copy(r.Stats)
 	server.ConnState = cs.HandleEvent
 	go cs.Report()
 	handler := r.Handler

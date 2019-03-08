@@ -10,6 +10,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
+	"github.com/rs/xstats"
 )
 
 // MockStat is a mock of Stat interface
@@ -33,6 +34,20 @@ func NewMockStat(ctrl *gomock.Controller) *MockStat {
 // EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockStat) EXPECT() *MockStatMockRecorder {
 	return m.recorder
+}
+
+// Copy mocks base method
+func (m *MockStat) Copy() xstats.XStater {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Copy")
+	ret0, _ := ret[0].(xstats.XStater)
+	return ret0
+}
+
+// Copy indicates an expected call of Copy
+func (mr *MockStatMockRecorder) Copy() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Copy", reflect.TypeOf((*MockStat)(nil).Copy))
 }
 
 // AddTags mocks base method

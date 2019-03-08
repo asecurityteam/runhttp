@@ -70,6 +70,7 @@ func TestNew(t *testing.T) {
 	// times as part of the test.
 	logger.EXPECT().Copy().Return(logger).MinTimes(1)
 	logger.EXPECT().Info(gomock.Any()).MinTimes(1)
+	stat.EXPECT().Copy().Return(stat).AnyTimes()
 	stat.EXPECT().Count("test", float64(1)).MinTimes(1)
 	stat.EXPECT().Count("newcounter", float64(1)).MinTimes(1)
 	stat.EXPECT().Count("activecounter", float64(1)).MinTimes(1)
