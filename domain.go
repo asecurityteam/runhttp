@@ -40,10 +40,3 @@ type SignalFn func() chan error
 // ServerFn is a constructor for *http.Server instances that will
 // be hosted by the runtime.
 type ServerFn func() *http.Server
-
-// Runner is the abstract type that this package returns when
-// constructing a runtime. The 'Run' method may be called multiple
-// times but not concurrently.
-type Runner interface {
-	Run() error
-}

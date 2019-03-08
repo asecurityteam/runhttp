@@ -15,17 +15,22 @@ import (
 // SignalFn, and use the ServerFn to regenerate a working server on
 // subsequent Run calls.
 type Runtime struct {
-	Logger  Logger
-	Stats   Stat
-	Exit    SignalFn
-	Server  ServerFn
-	Handler http.Handler
+	Logger    Logger
+	Stats     Stat
+	ConnState func() *ConnState
+	Exit      SignalFn
+	Server    ServerFn
+	Handler   http.Handler
 }
 
 // Run the server until a signal is received.
 func (r *Runtime) Run() error {
 	exit := r.Exit()
 	server := r.Server()
+	cs := r.ConnState()
+	cs.Stat = xstats.Copy(r.Stats)
+	server.ConnState = cs.HandleEvent
+	go cs.Report()
 	handler := r.Handler
 	handler = xstats.NewHandler(r.Stats, nil)(handler)
 	handler = hlog.NewMiddleware(r.Logger)(handler)
@@ -37,6 +42,7 @@ func (r *Runtime) Run() error {
 
 	err := <-exit
 
+	cs.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	_ = server.Shutdown(ctx)
