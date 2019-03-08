@@ -8,10 +8,11 @@ import (
 // Config is the top-level configuration container for
 // a runtime.
 type Config struct {
-	HTTP   *HTTPConfig
-	Logger *LoggerConfig
-	Stats  *StatsConfig
-	Signal *SignalConfig
+	HTTP      *HTTPConfig
+	ConnState *ConnStateConfig
+	Logger    *LoggerConfig
+	Stats     *StatsConfig
+	Signal    *SignalConfig
 }
 
 // Name returns the configuration root as it would appear in a config file.
@@ -27,16 +28,18 @@ type Component struct {
 // Settings generates a configuration object with all defaults set.
 func (*Component) Settings() *Config {
 	return &Config{
-		HTTP:   (&HTTPComponent{}).Settings(),
-		Logger: (&LoggerComponent{}).Settings(),
-		Stats:  (&StatsComponent{}).Settings(),
-		Signal: (&SignalComponent{}).Settings(),
+		HTTP:      (&HTTPComponent{}).Settings(),
+		ConnState: (&ConnStateComponent{}).Settings(),
+		Logger:    (&LoggerComponent{}).Settings(),
+		Stats:     (&StatsComponent{}).Settings(),
+		Signal:    (&SignalComponent{}).Settings(),
 	}
 }
 
 // New produces a configured runtime.
 func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
 	log := &LoggerComponent{}
+	connState := &ConnStateComponent{}
 	stat := &StatsComponent{}
 	sigs := &SignalComponent{}
 	srv := &HTTPComponent{}
@@ -46,6 +49,10 @@ func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
 		return nil, err
 	}
 	stats, err := stat.New(ctx, conf.Stats)
+	if err != nil {
+		return nil, err
+	}
+	cs, err := connState.New(ctx, conf.ConnState)
 	if err != nil {
 		return nil, err
 	}
@@ -59,10 +66,11 @@ func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
 	}
 
 	return &Runtime{
-		Logger:  logger,
-		Stats:   stats,
-		Exit:    exit,
-		Server:  server,
-		Handler: c.Handler,
+		Logger:    logger,
+		Stats:     stats,
+		ConnState: cs,
+		Exit:      exit,
+		Server:    server,
+		Handler:   c.Handler,
 	}, nil
 }

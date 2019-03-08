@@ -46,6 +46,13 @@ func TestNew(t *testing.T) {
 		"RUNTIME_HTTPSERVER_ADDRESS=localhost:9090",
 		"RUNTIME_LOGGER_OUTPUT=NULL",
 		"RUNTIME_STATS_OUTPUT=NULL",
+		"RUNTIME_CONNSTATE_NEWCOUNTER=newcounter",
+		"RUNTIME_CONNSTATE_ACTIVECOUNTER=activecounter",
+		"RUNTIME_CONNSTATE_CLOSEDCOUNTER=closedcounter",
+		"RUNTIME_CONNSTATE_IDLECOUNTER=idlecounter",
+		"RUNTIME_CONNSTATE_NEWGAUGE=newgauge",
+		"RUNTIME_CONNSTATE_ACTIVEGAUGE=activegauge",
+		"RUNTIME_CONNSTATE_IDLEGAUGE=idlegauge",
 	})
 	require.Nil(t, err)
 	rt, err := runhttp.New(ctx, source, handler)
@@ -64,6 +71,13 @@ func TestNew(t *testing.T) {
 	logger.EXPECT().Copy().Return(logger).MinTimes(1)
 	logger.EXPECT().Info(gomock.Any()).MinTimes(1)
 	stat.EXPECT().Count("test", float64(1)).MinTimes(1)
+	stat.EXPECT().Count("newcounter", float64(1)).MinTimes(1)
+	stat.EXPECT().Count("activecounter", float64(1)).MinTimes(1)
+	stat.EXPECT().Count("idlecounter", float64(1)).MinTimes(1)
+	stat.EXPECT().Count("closedcounter", float64(1)).AnyTimes()
+	stat.EXPECT().Count("newgauge", gomock.Any()).AnyTimes()
+	stat.EXPECT().Count("idlegauge", gomock.Any()).AnyTimes()
+	stat.EXPECT().Count("activegauge", gomock.Any()).AnyTimes()
 
 	exit := make(chan error)
 	go func() {
@@ -87,7 +101,6 @@ func TestNew(t *testing.T) {
 		}
 		break
 	}
-
 	// The runtime establishes a signal handler for the entire
 	// process. This means we have the process signal itself and
 	// the runtime will intercept the call. This enables us to test
