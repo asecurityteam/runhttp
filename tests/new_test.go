@@ -9,9 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/asecurityteam/settings"
-
 	"github.com/asecurityteam/runhttp"
+	"github.com/asecurityteam/settings"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
