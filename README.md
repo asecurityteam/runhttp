@@ -1,14 +1,20 @@
 <a id="markdown-runhttp---prepackaged-runtime-helper-for-http" name="runhttp---prepackaged-runtime-helper-for-http"></a>
 # runhttp - Prepackaged Runtime Helper For HTTP
 
-*Status: Incubation*
-
 <!-- TOC -->
 
 - [runhttp - Prepackaged Runtime Helper For HTTP](#runhttp---prepackaged-runtime-helper-for-http)
     - [Overview](#overview)
     - [Quick Start](#quick-start)
+    - [Details](#details)
+        - [Configuration](#configuration)
+            - [YAML](#yaml)
+            - [ENV](#env)
+        - [Logging](#logging)
+        - [Metrics](#metrics)
+    - [Status](#status)
     - [Contributing](#contributing)
+        - [Building And Testing](#building-and-testing)
         - [License](#license)
         - [Contributing Agreement](#contributing-agreement)
 
@@ -21,14 +27,6 @@ This project is a tool bundle for running an HTTP service written in go. It come
 an opinionated choice of logger, metrics client, and configuration parsing. The benefits
 are a suite of server metrics built in, a configurable and pluggable shutdown signaling
 system, and support for restarting the server without exiting the running process.
-
-Logging is provided by the `logevent` project and you are highly encouraged to use
-the logger provided in the request context rather than another logging library. Metrics are
-provided by the `xstats` project and you are highly encouraged to use the client
-provided in the request context rather than another metrics library. Configuration is
-provided by the `settings` project and you are highly encouraged to use the tooling
-it provides to extend any configuration options or add your own additional configurable
-components.
 
 <a id="markdown-quick-start" name="quick-start"></a>
 ## Quick Start
@@ -50,9 +48,6 @@ func main() {
         runtthp.StatFromContext(r.Context()) // Get a metrics client
     })
 
-    // Bind your handler to the Component loader.
-    rt := &runhttp.Component{Handler: handler}
-
     // Create any implementation of the settings.Source interface. Here we
     // use the environment variable source.
     source, err := settings.NewEnvSource(os.Environ())
@@ -60,23 +55,186 @@ func main() {
 		panic(err.Error())
 	}
 
-    // Create a pointer that will contain the runtime.
-    runnerDst := new(runhttp.Runner)
-    // Load the runtime into the pointer.
-	err = settings.NewComponent(ctx, source, rt, runnerDst)
+    // Load the runtime using the Source and Handler.
+	rt, err := runhttp.New(context.Background(), source, handler)
 	if err != nil {
 		panic(err.Error())
-    }
+	}
 
     // Run the HTTP server.
-    if err := (*runnerDst).Run(); err != nil {
+    if err := rt.Run(); err != nil {
 		panic(err.Error())
 	}
 }
 ```
 
+<a id="markdown-details" name="details"></a>
+## Details
+
+<a id="markdown-configuration" name="configuration"></a>
+### Configuration
+
+We use our [settings](https://github.com/asecurityteam/settings) project to manage configuration.
+This makes it possible to load configuration values from environment variables, JSON files,
+or YAML files. Other configurations sources are possible by implementing the `settings.Source`
+interface defined in the settings project.
+
+<a id="markdown-yaml" name="yaml"></a>
+#### YAML
+
+If using a YAML file then a configuration would look like:
+
+```yaml
+runtime:
+  signals:
+    # ([]string) Which signal handlers are installed. Choices are OS.
+    installed:
+      - "OS"
+    os:
+      # ([]int) Which signals to listen for.
+      signals:
+        - 15
+        - 2
+  stats:
+    # (string) Destination stream of the stats. One of NULLSTAT, DATADOG.
+    output: "DATADOG"
+    datadog:
+      # (int) Max packet size to send.
+      packetsize: 32768
+      # ([]string) Any static tags for all metrics.
+      tags:
+      # (time.Duration) Frequencing of sending metrics to listener.
+      flushinterval: "10s"
+      # (string) Listener address to use when sending metrics.
+      address: "localhost:8125"
+  logger:
+    # (string) Destination stream of the logs. One of STDOUT, NULL.
+    output: "STDOUT"
+    # (string) The minimum level of logs to emit. One of DEBUG, INFO, WARN, ERROR.
+    level: "INFO"
+  connstate:
+    # (time.Duration) Interval on which gauges are reported.
+    reportinterval: "5s"
+    # (string) Name of the counter metric tracking hijacked clients.
+    hijackedcounter: "http.server.connstate.hijacked"
+    # (string) Name of the counter metric tracking closed clients.
+    closedcounter: "http.server.connstate.closed"
+    # (string) Name of the gauge metric tracking idle clients.
+    idlegauge: "http.server.connstate.idle.gauge"
+    # (string) Name of the counter metric tracking idle clients.
+    idlecounter: "http.server.connstate.idle"
+    # (string) Name of the gauge metric tracking active clients.
+    activegauge: "http.server.connstate.active.gauge"
+    # (string) Name of the counter metric tracking active clients.
+    activecounter: "http.server.connstate.active"
+    # (string) Name of the gauge metric tracking new clients.
+    newgauge: "http.server.connstate.new.gauge"
+    # (string) Name of the counter metric tracking new clients.
+    newcounter: "http.server.connstate.new"
+  httpserver:
+    # (string) The listening address of the server.
+    address: ":8080"
+```
+
+<a id="markdown-env" name="env"></a>
+#### ENV
+
+If using the environment variable loader then a configuration would look like:
+
+```bash
+# (string) The listening address of the server.
+RUNTIME_HTTPSERVER_ADDRESS=":8080"
+# (time.Duration) Interval on which gauges are reported.
+RUNTIME_CONNSTATE_REPORTINTERVAL="5s"
+# (string) Name of the counter metric tracking hijacked clients.
+RUNTIME_CONNSTATE_HIJACKEDCOUNTER="http.server.connstate.hijacked"
+# (string) Name of the counter metric tracking closed clients.
+RUNTIME_CONNSTATE_CLOSEDCOUNTER="http.server.connstate.closed"
+# (string) Name of the gauge metric tracking idle clients.
+RUNTIME_CONNSTATE_IDLEGAUGE="http.server.connstate.idle.gauge"
+# (string) Name of the counter metric tracking idle clients.
+RUNTIME_CONNSTATE_IDLECOUNTER="http.server.connstate.idle"
+# (string) Name of the gauge metric tracking active clients.
+RUNTIME_CONNSTATE_ACTIVEGAUGE="http.server.connstate.active.gauge"
+# (string) Name of the counter metric tracking active clients.
+RUNTIME_CONNSTATE_ACTIVECOUNTER="http.server.connstate.active"
+# (string) Name of the gauge metric tracking new clients.
+RUNTIME_CONNSTATE_NEWGAUGE="http.server.connstate.new.gauge"
+# (string) Name of the counter metric tracking new clients.
+RUNTIME_CONNSTATE_NEWCOUNTER="http.server.connstate.new"
+# (string) Destination stream of the logs. One of STDOUT, NULL.
+RUNTIME_LOGGER_OUTPUT="STDOUT"
+# (string) The minimum level of logs to emit. One of DEBUG, INFO, WARN, ERROR.
+RUNTIME_LOGGER_LEVEL="INFO"
+# (string) Destination stream of the stats. One of NULLSTAT, DATADOG.
+RUNTIME_STATS_OUTPUT="DATADOG"
+# (int) Max packet size to send.
+RUNTIME_STATS_DATADOG_PACKETSIZE="32768"
+# ([]string) Any static tags for all metrics.
+RUNTIME_STATS_DATADOG_TAGS=""
+# (time.Duration) Frequencing of sending metrics to listener.
+RUNTIME_STATS_DATADOG_FLUSHINTERVAL="10s"
+# (string) Listener address to use when sending metrics.
+RUNTIME_STATS_DATADOG_ADDRESS="localhost:8125"
+# ([]string) Which signal handlers are installed. Choices are OS.
+RUNTIME_SIGNALS_INSTALLED="OS"
+# ([]int) Which signals to listen for.
+RUNTIME_SIGNALS_OS_SIGNALS="15 2"
+```
+
+<a id="markdown-logging" name="logging"></a>
+### Logging
+
+This project will install a [logevent](https://github.com/asecurityteam/logevent) instance
+in the context. From within an HTTP handler the logger should be accessed using
+`runhttp.LoggerFromContext(r.Context())`.
+
+<a id="markdown-metrics" name="metrics"></a>
+### Metrics
+
+This project will install an [xstats](https://github.com/rs/xstats) instance in the context.
+Custom metrics may be emitted by extracting the client using `runhttp.StatFromContext(r.Context())`.
+
+In addition, the server will emit counters for new, active, idle, closed, and hijacked connections.
+Note that hijacked in this case refers to a Go behavior defined
+[here](https://golang.org/pkg/net/http/#Hijacker). The server emits gauges on an interval for
+new, active, and idle connections.
+
+<a id="markdown-status" name="status"></a>
+## Status
+
+This project is in incubation which means we are not yet operating this tool in production
+and the interfaces are subject to change.
+
 <a id="markdown-contributing" name="contributing"></a>
 ## Contributing
+
+<a id="markdown-building-and-testing" name="building-and-testing"></a>
+### Building And Testing
+
+We publish a docker image called [SDCLI](https://github.com/asecurityteam/sdcli) that
+bundles all of our build dependencies. It is used by the included Makefile to help make
+building and testing a bit easier. The following actions are available through the Makefile:
+
+-   make dep
+
+    Install the project dependencies into a vendor directory
+
+-   make lint
+
+    Run our static analysis suite
+
+-   make test
+
+    Run unit tests and generate a coverage artifact
+
+-   make integration
+
+    Run integration tests and generate a coverage artifact
+
+-   make coverage
+
+    Report the combined coverage for unit and integration tests
 
 <a id="markdown-license" name="license"></a>
 ### License
