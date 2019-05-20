@@ -44,7 +44,8 @@ func TestNew(t *testing.T) {
 	source, err := settings.NewEnvSource([]string{
 		"RUNTIME_HTTPSERVER_ADDRESS=localhost:9090",
 		"RUNTIME_LOGGER_OUTPUT=NULL",
-		"RUNTIME_STATS_OUTPUT=NULL",
+		"RUNTIME_STATS_OUTPUT=DATADOG",
+		"RUNTIME_STATS_DATADOG_TAGS=foo:bar key:value",
 		"RUNTIME_CONNSTATE_NEWCOUNTER=newcounter",
 		"RUNTIME_CONNSTATE_ACTIVECOUNTER=activecounter",
 		"RUNTIME_CONNSTATE_CLOSEDCOUNTER=closedcounter",
@@ -77,7 +78,7 @@ func TestNew(t *testing.T) {
 	stat.EXPECT().Count("closedcounter", float64(1)).AnyTimes()
 	stat.EXPECT().Count("newgauge", gomock.Any()).AnyTimes()
 	stat.EXPECT().Count("idlegauge", gomock.Any()).AnyTimes()
-	stat.EXPECT().Count("activegauge", gomock.Any()).AnyTimes()
+	stat.EXPECT().Count("activegauge", gomock.Any(), []string{"foo:bar","key:value"}).AnyTimes()
 
 	exit := make(chan error)
 	go func() {

@@ -76,7 +76,11 @@ func (*DatadogStatsComponent) New(_ context.Context, conf *DatadogStatsConfig) (
 	if err != nil {
 		return nil, err
 	}
-	return xstats.New(dogstatsd.NewMaxPacket(writer, conf.FlushInterval, conf.PacketSize)), nil
+	stater := xstats.New(dogstatsd.NewMaxPacket(writer, conf.FlushInterval, conf.PacketSize))
+	if len(conf.Tags) > 0 {
+		stater.AddTags(conf.Tags...)
+	}
+	return stater, nil
 }
 
 // StatsConfig contains all configuration values for creating
