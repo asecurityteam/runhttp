@@ -10,6 +10,7 @@ import (
 type Config struct {
 	HTTP      *HTTPConfig
 	ConnState *ConnStateConfig
+	Expvar    *ExpvarConfig
 	Logger    *LoggerConfig
 	Stats     *StatsConfig
 	Signal    *SignalConfig
@@ -30,6 +31,7 @@ func (*Component) Settings() *Config {
 	return &Config{
 		HTTP:      (&HTTPComponent{}).Settings(),
 		ConnState: (&ConnStateComponent{}).Settings(),
+		Expvar:    (&ExpvarComponent{}).Settings(),
 		Logger:    (&LoggerComponent{}).Settings(),
 		Stats:     (&StatsComponent{}).Settings(),
 		Signal:    (&SignalComponent{}).Settings(),
@@ -40,6 +42,7 @@ func (*Component) Settings() *Config {
 func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
 	log := &LoggerComponent{}
 	connState := &ConnStateComponent{}
+	expv := &ExpvarComponent{}
 	stat := &StatsComponent{}
 	sigs := &SignalComponent{}
 	srv := &HTTPComponent{}
@@ -56,6 +59,10 @@ func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
 	if err != nil {
 		return nil, err
 	}
+	expvar, err := expv.New(ctx, conf.Expvar)
+	if err != nil {
+		return nil, err
+	}
 	exit, err := sigs.New(ctx, conf.Signal)
 	if err != nil {
 		return nil, err
@@ -69,6 +76,7 @@ func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
 		Logger:    logger,
 		Stats:     stats,
 		ConnState: cs,
+		Expvar:    expvar,
 		Exit:      exit,
 		Server:    server,
 		Handler:   c.Handler,
