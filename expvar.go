@@ -45,40 +45,39 @@ type Expvar struct {
 	MemstatsTotalAllocName   string
 	GoroutinesExistsName     string
 	Interval                 time.Duration
-	statMut                  *sync.Mutex
-	stopMut                  *sync.Mutex
-	stop                     bool
+	reportMut                *sync.Mutex
+	stop                     chan interface{}
+	lastNumGC                uint32
+	readMemStats             func(*runtime.MemStats)
+	numGoroutine             func() int
 }
 
 // Report loops on a time interval and pushes a set of gauge metrics.
 func (e *Expvar) Report() {
 	ticker := time.NewTicker(e.Interval)
 	defer ticker.Stop()
-	for range ticker.C {
-		e.report()
-		e.stopMut.Lock()
-		if e.stop {
-			e.stopMut.Unlock()
+	for {
+		select {
+		case <-ticker.C:
+			e.report()
+		case <-e.stop:
 			return
 		}
-		e.stopMut.Unlock()
 	}
 }
 
 // Close the reporting loop.
 func (e *Expvar) Close() {
-	e.stopMut.Lock()
-	defer e.stopMut.Unlock()
-	e.stop = true
+	e.stop <- struct{}{}
 }
 
 func (e *Expvar) report() {
 	memstats := new(runtime.MemStats)
-	runtime.ReadMemStats(memstats)
-	numGoroutines := runtime.NumGoroutine()
+	e.readMemStats(memstats)
+	numGoroutines := e.numGoroutine()
 
-	e.statMut.Lock()
-	defer e.statMut.Unlock()
+	e.reportMut.Lock()
+	defer e.reportMut.Unlock()
 
 	e.Stat.Gauge(e.MemstatsAllocName, float64(memstats.Alloc))
 	e.Stat.Gauge(e.MemstatsFreesName, float64(memstats.Frees))
@@ -95,7 +94,31 @@ func (e *Expvar) report() {
 	e.Stat.Gauge(e.MemstatsTotalAllocName, float64(memstats.TotalAlloc))
 	e.Stat.Gauge(e.GoroutinesExistsName, float64(numGoroutines))
 
-	// TODO PauseNS
+	// PauseNs is a circular buffer of recent GC stop-the-world
+	// pause times in nanoseconds.
+	//
+	// The most recent pause is at PauseNs[(NumGC+255)%256]. In
+	// general, PauseNs[N%256] records the time paused in the most
+	// recent N%256th GC cycle. There may be multiple pauses per
+	// GC cycle; this is the sum of all pauses during a cycle.
+	pauseNS := memstats.PauseNs
+	if e.lastNumGC == memstats.NumGC { // no GC cycles have run
+		return
+	}
+	start := e.lastNumGC % 256
+	end := (memstats.NumGC+255)%256 + 1
+	var values []uint64
+	if start < end {
+		values = pauseNS[start:end]
+	} else {
+		values = append(pauseNS[start:], pauseNS[:end]...)
+	}
+
+	e.lastNumGC = memstats.NumGC
+
+	for _, val := range values {
+		e.Stat.Histogram(e.MemstatsPauseNSName, float64(val))
+	}
 }
 
 // ExpvarConfig is a container for internal expvar metrics settings.
@@ -125,7 +148,7 @@ func (*ExpvarConfig) Name() string {
 
 // Description returns the help information for the configuration root.
 func (*ExpvarConfig) Description() string {
-	return "Expvar metric names."
+	return "Expvar metric names"
 }
 
 // ExpvarComponent implements the settings.Component interface for expvar metrics.
@@ -173,8 +196,10 @@ func (*ExpvarComponent) New(_ context.Context, conf *ExpvarConfig) (func() *Expv
 			MemstatsTotalAllocName:   conf.TotalAlloc,
 			GoroutinesExistsName:     conf.GoroutinesExists,
 			Interval:                 conf.ReportInterval,
-			statMut:                  &sync.Mutex{},
-			stopMut:                  &sync.Mutex{},
+			reportMut:                &sync.Mutex{},
+			stop:                     make(chan interface{}),
+			readMemStats:             runtime.ReadMemStats,
+			numGoroutine:             runtime.NumGoroutine,
 		}
 	}, nil
 
