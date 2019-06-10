@@ -18,6 +18,7 @@ type Runtime struct {
 	Logger    Logger
 	Stats     Stat
 	ConnState func() *ConnState
+	Expvar    func() *Expvar
 	Exit      SignalFn
 	Server    ServerFn
 	Handler   http.Handler
@@ -29,8 +30,11 @@ func (r *Runtime) Run() error {
 	server := r.Server()
 	cs := r.ConnState()
 	cs.Stat = xstats.Copy(r.Stats)
+	expvar := r.Expvar()
+	expvar.Stat = xstats.Copy(r.Stats)
+	mr := MultiReporter{cs, expvar}
 	server.ConnState = cs.HandleEvent
-	go cs.Report()
+	mr.Report()
 	handler := r.Handler
 	handler = xstats.NewHandler(r.Stats, nil)(handler)
 	handler = hlog.NewMiddleware(r.Logger)(handler)
@@ -42,7 +46,7 @@ func (r *Runtime) Run() error {
 
 	err := <-exit
 
-	cs.Close()
+	mr.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	_ = server.Shutdown(ctx)
