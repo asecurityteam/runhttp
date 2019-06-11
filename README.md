@@ -163,7 +163,7 @@ runtime:
     # (string) Name of the metric tracking number of active go routines
     goroutinesexists: "go_expvar.goroutines.exists"
     # (time.Duration) Interval on which metrics are reported
-		reportinterval: "5s"
+    reportinterval: "5s"
   httpserver:
     # (string) The listening address of the server.
     address: ":8080"
