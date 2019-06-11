@@ -131,6 +131,39 @@ runtime:
     newgauge: "http.server.connstate.new.gauge"
     # (string) Name of the counter metric tracking new clients.
     newcounter: "http.server.connstate.new"
+  expvar:
+    # (string) Name of the metric tracking allocated bytes
+    alloc: "go_expvar.memstats.alloc"
+    # (string) Name of the metric tracking number of frees
+    frees: "go_expvar.memstats.frees"
+    # (string) Name of the metric tracking allocated bytes
+    heapalloc: "go_expvar.memstats.heap_alloc"
+    # (string) Name of the metric tracking bytes in unused spans
+    heapidle: "go_expvar.memstats.heap_idle"
+    # (string) Name of the metric tracking bytes in in-use spans
+    heapinuse: "go_expvar.memstats.heap_inuse"
+    # (string) Name of the metric tracking total number of object allocated"
+    heapobject: "go_expvar.memstats.heap_objects"
+    # (string) Name of the metric tracking bytes realeased to the OS
+    heaprealeased: "go_expvar.memstats.heap_released"
+    # (string) Name of the metric tracking bytes obtained from the system
+    heapstats: "go_expvar.memstats.heap_sys"
+    # (string) Name of the metric tracking number of pointer lookups
+    lookups: "go_expvar.memstats.lookups"
+    # (string) Name of the metric tracking number of mallocs
+    mallocs: "go_expvar.memstats.mallocs"
+    # (string) Name of the metric tracking number of garbage collections
+    numgc: "go_expvar.memstats.num_gc"
+    # (string) Name of the metric tracking duration of GC pauses
+    pausens: "go_expvar.memstats.pause_ns"
+    # (string) Name of the metric tracking total GC pause duration over lifetime process
+    pausetotalns: "go_expvar.memstats.pause_total_ns"
+    # (string) Name of the metric tracking allocated bytes (even if freed)
+    totalalloc: "go_expvar.memstats.total_alloc"
+    # (string) Name of the metric tracking number of active go routines
+    goroutinesexists: "go_expvar.goroutines.exists"
+    # (time.Duration) Interval on which metrics are reported
+		reportinterval: "5s"
   httpserver:
     # (string) The listening address of the server.
     address: ":8080"
@@ -162,6 +195,38 @@ RUNTIME_CONNSTATE_ACTIVECOUNTER="http.server.connstate.active"
 RUNTIME_CONNSTATE_NEWGAUGE="http.server.connstate.new.gauge"
 # (string) Name of the counter metric tracking new clients.
 RUNTIME_CONNSTATE_NEWCOUNTER="http.server.connstate.new"
+# (string) Name of the metric tracking allocated bytes
+RUNTIME_EXPVAR_ALLOC: "go_expvar.memstats.alloc"
+# (string) Name of the metric tracking number of frees
+RUNTIME_EXPVAR_FREES: "go_expvar.memstats.frees"
+# (string) Name of the metric tracking allocated bytes
+RUNTIME_EXPVAR_HEAPALLOC: "go_expvar.memstats.heap_alloc"
+# (string) Name of the metric tracking bytes in unused spans
+RUNTIME_EXPVAR_HEAPIDLE: "go_expvar.memstats.heap_idle"
+# (string) Name of the metric tracking bytes in in-use spans
+RUNTIME_EXPVAR_HEAPINUSE: "go_expvar.memstats.heap_inuse"
+# (string) Name of the metric tracking total number of object allocated"
+RUNTIME_EXPVAR_HEAPOBJECT: "go_expvar.memstats.heap_objects"
+# (string) Name of the metric tracking bytes realeased to the OS
+RUNTIME_EXPVAR_HEAPREALEASED: "go_expvar.memstats.heap_released"
+# (string) Name of the metric tracking bytes obtained from the system
+RUNTIME_EXPVAR_HEAPSTATS: "go_expvar.memstats.heap_sys"
+# (string) Name of the metric tracking number of pointer lookups
+RUNTIME_EXPVAR_LOOKUPS: "go_expvar.memstats.lookups"
+# (string) Name of the metric tracking number of mallocs
+RUNTIME_EXPVAR_MALLOCS: "go_expvar.memstats.mallocs"
+# (string) Name of the metric tracking number of garbage collections
+RUNTIME_EXPVAR_NUMGC: "go_expvar.memstats.num_gc"
+# (string) Name of the metric tracking duration of GC pauses
+RUNTIME_EXPVAR_PAUSENS: "go_expvar.memstats.pause_ns"
+# (string) Name of the metric tracking total GC pause duration over lifetime process
+RUNTIME_EXPVAR_PAUSETOTALNS: "go_expvar.memstats.pause_total_ns"
+# (string) Name of the metric tracking allocated bytes (even if freed)
+RUNTIME_EXPVAR_TOTALALLOC: "go_expvar.memstats.total_alloc"
+# (string) Name of the metric tracking number of active go routines
+RUNTIME_EXPVAR_GOROUTINESEXISTS: "go_expvar.goroutines.exists"
+# (time.Duration) Interval on which metrics are reported
+RUNTIME_EXPVAR_REPORTINTERVAL: "5s"
 # (string) Destination stream of the logs. One of STDOUT, NULL.
 RUNTIME_LOGGER_OUTPUT="STDOUT"
 # (string) The minimum level of logs to emit. One of DEBUG, INFO, WARN, ERROR.
@@ -199,6 +264,9 @@ In addition, the server will emit counters for new, active, idle, closed, and hi
 Note that hijacked in this case refers to a Go behavior defined
 [here](https://golang.org/pkg/net/http/#Hijacker). The server emits gauges on an interval for
 new, active, and idle connections.
+
+Go runtime metrics are also emitted. These values are extracted on a specified polling interval from the [runtime](https://golang.org/pkg/runtime/#MemStats) package.
+The table [here](https://docs.datadoghq.com/integrations/go_expvar/#metrics) illustrates how we expect to see these values as metrics.
 
 <a id="markdown-status" name="status"></a>
 ## Status
