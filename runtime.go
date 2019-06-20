@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	connstate "github.com/asecurityteam/component-connstate"
+	expvar "github.com/asecurityteam/component-expvar"
+	signals "github.com/asecurityteam/component-signals"
 	hlog "github.com/asecurityteam/logevent/http"
 	"github.com/rs/xstats"
 )
@@ -17,39 +20,34 @@ import (
 type Runtime struct {
 	Logger    Logger
 	Stats     Stat
-	ConnState func() *ConnState
-	Expvar    func() *Expvar
-	Exit      SignalFn
-	Server    ServerFn
+	ConnState *connstate.ConnState
+	Expvar    *expvar.Expvar
+	Exit      signals.Signal
+	Server    *http.Server
 	Handler   http.Handler
 }
 
 // Run the server until a signal is received.
 func (r *Runtime) Run() error {
-	exit := r.Exit()
-	server := r.Server()
-	cs := r.ConnState()
-	cs.Stat = xstats.Copy(r.Stats)
-	expvar := r.Expvar()
-	expvar.Stat = xstats.Copy(r.Stats)
-	mr := MultiReporter{cs, expvar}
-	server.ConnState = cs.HandleEvent
-	mr.Report()
+
+	go r.Expvar.Report()
+	defer r.Expvar.Close()
+	go r.ConnState.Report()
+	defer r.ConnState.Close()
+
 	handler := r.Handler
 	handler = xstats.NewHandler(r.Stats, nil)(handler)
 	handler = hlog.NewMiddleware(r.Logger)(handler)
-	server.Handler = handler
+	r.Server.Handler = handler
 
 	go func() {
-		exit <- server.ListenAndServe()
+		r.Exit <- r.Server.ListenAndServe()
 	}()
 
-	err := <-exit
-
-	mr.Close()
+	err := <-r.Exit
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	_ = server.Shutdown(ctx)
+	_ = r.Server.Shutdown(ctx)
 
 	return err
 }
