@@ -3,17 +3,24 @@ package runhttp
 import (
 	"context"
 	"net/http"
+
+	connstate "github.com/asecurityteam/component-connstate"
+	expvar "github.com/asecurityteam/component-expvar"
+	log "github.com/asecurityteam/component-log"
+	signals "github.com/asecurityteam/component-signals"
+	stat "github.com/asecurityteam/component-stat"
+	"github.com/rs/xstats"
 )
 
 // Config is the top-level configuration container for
 // a runtime.
 type Config struct {
 	HTTP      *HTTPConfig
-	ConnState *ConnStateConfig
-	Expvar    *ExpvarConfig
-	Logger    *LoggerConfig
-	Stats     *StatsConfig
-	Signal    *SignalConfig
+	ConnState *connstate.Config
+	Expvar    *expvar.Config
+	Logger    *log.Config
+	Stats     *stat.Config
+	Signal    *signals.Config
 }
 
 // Name returns the configuration root as it would appear in a config file.
@@ -23,54 +30,73 @@ func (*Config) Name() string {
 
 // Component implements the settings.Component interface for an HTTP runtime.
 type Component struct {
-	Handler http.Handler
+	HTTP      *HTTPComponent
+	Connstate *connstate.Component
+	Expvar    *expvar.Component
+	Logger    *log.Component
+	Stats     *stat.Component
+	Signal    *signals.Component
+	Handler   http.Handler
+}
+
+// NewComponent populates the component with some default values.
+func NewComponent() *Component {
+	return &Component{
+		HTTP:      &HTTPComponent{},
+		Connstate: connstate.NewComponent(),
+		Expvar:    expvar.NewComponent(),
+		Logger:    log.NewComponent(),
+		Stats:     stat.NewComponent(),
+		Signal:    signals.NewComponent(),
+	}
+}
+
+// WithHandler returns a copy of the component bound to the given handler.
+func (c *Component) WithHandler(h http.Handler) *Component {
+	n := NewComponent()
+	n.Handler = h
+	return n
 }
 
 // Settings generates a configuration object with all defaults set.
-func (*Component) Settings() *Config {
+func (c *Component) Settings() *Config {
 	return &Config{
-		HTTP:      (&HTTPComponent{}).Settings(),
-		ConnState: (&ConnStateComponent{}).Settings(),
-		Expvar:    (&ExpvarComponent{}).Settings(),
-		Logger:    (&LoggerComponent{}).Settings(),
-		Stats:     (&StatsComponent{}).Settings(),
-		Signal:    (&SignalComponent{}).Settings(),
+		HTTP:      c.HTTP.Settings(),
+		ConnState: c.Connstate.Settings(),
+		Expvar:    c.Expvar.Settings(),
+		Logger:    c.Logger.Settings(),
+		Stats:     c.Stats.Settings(),
+		Signal:    c.Signal.Settings(),
 	}
 }
 
 // New produces a configured runtime.
 func (c *Component) New(ctx context.Context, conf *Config) (*Runtime, error) {
-	log := &LoggerComponent{}
-	connState := &ConnStateComponent{}
-	expv := &ExpvarComponent{}
-	stat := &StatsComponent{}
-	sigs := &SignalComponent{}
-	srv := &HTTPComponent{}
-
-	logger, err := log.New(ctx, conf.Logger)
+	logger, err := c.Logger.New(ctx, conf.Logger)
 	if err != nil {
 		return nil, err
 	}
-	stats, err := stat.New(ctx, conf.Stats)
+	stats, err := c.Stats.New(ctx, conf.Stats)
 	if err != nil {
 		return nil, err
 	}
-	cs, err := connState.New(ctx, conf.ConnState)
+	cs, err := c.Connstate.WithStat(xstats.Copy(stats)).New(ctx, conf.ConnState)
 	if err != nil {
 		return nil, err
 	}
-	expvar, err := expv.New(ctx, conf.Expvar)
+	expvar, err := c.Expvar.WithStat(xstats.Copy(stats)).New(ctx, conf.Expvar)
 	if err != nil {
 		return nil, err
 	}
-	exit, err := sigs.New(ctx, conf.Signal)
+	exit, err := c.Signal.New(ctx, conf.Signal)
 	if err != nil {
 		return nil, err
 	}
-	server, err := srv.New(ctx, conf.HTTP)
+	server, err := c.HTTP.New(ctx, conf.HTTP)
 	if err != nil {
 		return nil, err
 	}
+	server.ConnState = cs.HandleEvent
 
 	return &Runtime{
 		Logger:    logger,

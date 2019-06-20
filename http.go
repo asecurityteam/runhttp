@@ -31,10 +31,8 @@ func (*HTTPComponent) Settings() *HTTPConfig {
 }
 
 // New produces a ServerFn bound to the given configuration.
-func (*HTTPComponent) New(_ context.Context, conf *HTTPConfig) (ServerFn, error) {
-	return func() *http.Server {
-		return &http.Server{
-			Addr: conf.Address,
-		}
+func (*HTTPComponent) New(_ context.Context, conf *HTTPConfig) (*http.Server, error) {
+	return &http.Server{
+		Addr: conf.Address,
 	}, nil
 }

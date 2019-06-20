@@ -1,14 +1,26 @@
-[[constraint]]
+[[override]]
   name = "github.com/asecurityteam/settings"
-  branch = "master"
+  version = "^0.1.0"
 
 [[constraint]]
-  name = "github.com/asecurityteam/logevent"
-  version = "1.0.4"
+  name = "github.com/asecurityteam/component-stat"
+  version = "^0.1.0"
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/rs/xstats"
+  name = "github.com/asecurityteam/component-log"
+  version = "^0.1.0"
+
+[[constraint]]
+  name = "github.com/asecurityteam/component-connstate"
+  version = "^0.1.0"
+
+[[constraint]]
+  name = "github.com/asecurityteam/component-expvar"
+  version = "^0.1.0"
+
+[[constraint]]
+  name = "github.com/asecurityteam/component-signals"
+  version = "^0.1.0"
 
 [prune]
   go-tests = true

@@ -62,6 +62,7 @@ func TestNew(t *testing.T) {
 	// expectations.
 	rt.Logger = logger
 	rt.Stats = stat
+	rt.ConnState.Stat = stat
 
 	// Ensure that the handler calls to the stat and logger
 	// are triggered at-least one time to verify that our choice
