@@ -1,6 +1,6 @@
 <a id="markdown-runhttp---prepackaged-runtime-helper-for-http" name="runhttp---prepackaged-runtime-helper-for-http"></a>
 # runhttp - Prepackaged Runtime Helper For HTTP
-
+[![GoDoc](https://godoc.org/github.com/asecurityteam/runhttp?status.svg)](https://godoc.org/github.com/asecurityteam/runhttp)
 <!-- TOC -->
 
 - [runhttp - Prepackaged Runtime Helper For HTTP](#runhttp---prepackaged-runtime-helper-for-http)
