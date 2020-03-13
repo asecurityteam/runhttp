@@ -11,6 +11,7 @@ require (
 	github.com/asecurityteam/logevent v0.0.0-20190225122144-b32737d8d51c
 	github.com/asecurityteam/settings v0.1.0
 	github.com/fatih/structs v1.1.0 // indirect
+	github.com/go-chi/chi v4.0.3+incompatible
 	github.com/go-yaml/yaml v2.1.0+incompatible // indirect
 	github.com/golang/mock v1.2.0
 	github.com/rs/xhandler v0.0.0-20151224012956-d9d9599b6aaf // indirect
