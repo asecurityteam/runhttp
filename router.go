@@ -20,8 +20,8 @@ func applyDefaults(conf *RouterConfig) *RouterConfig {
 	return conf
 }
 
-// NewDefaultRouter generates a mux that already has AWS Lambda API
-// routes bound. This version returns a mux from the chi project
+// NewDefaultRouter generates a mux.
+// This version returns a mux from the chi project
 // as a convenience for cases where custom middleware or additional
 // routes need to be configured.
 func NewDefaultRouter(conf *RouterConfig) *chi.Mux {
