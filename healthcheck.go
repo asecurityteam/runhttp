@@ -2,7 +2,7 @@ package runhttp
 
 import "net/http"
 
-// HealthCheckHandler responds with a 200, as required by services under Micros
+// HealthCheckHandler responds with a 200
 type HealthCheckHandler struct {
 }
 
