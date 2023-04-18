@@ -6,9 +6,9 @@ import (
 
 	connstate "github.com/asecurityteam/component-connstate"
 	expvar "github.com/asecurityteam/component-expvar"
-	log "github.com/asecurityteam/component-log"
+	log "github.com/asecurityteam/component-shared/log"
+	stat "github.com/asecurityteam/component-shared/stat"
 	signals "github.com/asecurityteam/component-signals"
-	stat "github.com/asecurityteam/component-stat"
 	"github.com/rs/xstats"
 )
 
