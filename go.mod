@@ -3,10 +3,7 @@ module github.com/asecurityteam/runhttp
 go 1.17
 
 require (
-	github.com/asecurityteam/component-connstate v0.1.0
-	github.com/asecurityteam/component-expvar v0.1.0
-	github.com/asecurityteam/component-shared v0.1.1
-	github.com/asecurityteam/component-signals v0.1.0
+	github.com/asecurityteam/component-shared v0.2.0
 	github.com/asecurityteam/logevent v1.6.1
 	github.com/asecurityteam/settings v0.7.0
 	github.com/go-chi/chi v4.0.3+incompatible
@@ -16,7 +13,6 @@ require (
 )
 
 require (
-	github.com/asecurityteam/component-stat v0.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect

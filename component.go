@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	connstate "github.com/asecurityteam/component-connstate"
-	expvar "github.com/asecurityteam/component-expvar"
+	connstate "github.com/asecurityteam/component-shared/connstate"
+	expvar "github.com/asecurityteam/component-shared/expvar"
 	log "github.com/asecurityteam/component-shared/log"
+	signals "github.com/asecurityteam/component-shared/signals"
 	stat "github.com/asecurityteam/component-shared/stat"
-	signals "github.com/asecurityteam/component-signals"
 	"github.com/rs/xstats"
 )
 
