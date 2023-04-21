@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	connstate "github.com/asecurityteam/component-connstate"
-	expvar "github.com/asecurityteam/component-expvar"
-	signals "github.com/asecurityteam/component-signals"
+	connstate "github.com/asecurityteam/component-shared/connstate"
+	expvar "github.com/asecurityteam/component-shared/expvar"
+	signals "github.com/asecurityteam/component-shared/signals"
 	hlog "github.com/asecurityteam/logevent/http"
 	"github.com/rs/xstats"
 )
