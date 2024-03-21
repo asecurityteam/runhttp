@@ -1,4 +1,5 @@
-//+build integration
+//go:build integration
+// +build integration
 
 package tests
 
@@ -9,10 +10,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/asecurityteam/runhttp"
-	"github.com/asecurityteam/settings"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+
+	"github.com/asecurityteam/runhttp"
+	"github.com/asecurityteam/settings"
 )
 
 type testLog struct {
@@ -79,7 +81,7 @@ func TestNew(t *testing.T) {
 	stat.EXPECT().Count("closedcounter", float64(1)).AnyTimes()
 	stat.EXPECT().Count("newgauge", gomock.Any()).AnyTimes()
 	stat.EXPECT().Count("idlegauge", gomock.Any()).AnyTimes()
-	stat.EXPECT().Count("activegauge", gomock.Any(), []string{"foo:bar","key:value"}).AnyTimes()
+	stat.EXPECT().Count("activegauge", gomock.Any(), []string{"foo:bar", "key:value"}).AnyTimes()
 
 	exit := make(chan error)
 	go func() {
