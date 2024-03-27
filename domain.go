@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/asecurityteam/logevent"
 	"github.com/rs/xstats"
+
+	"github.com/asecurityteam/logevent"
 )
 
 // Logger is the project logging client interface. It is

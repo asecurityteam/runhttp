@@ -3,6 +3,7 @@ package runhttp
 import (
 	"context"
 	"net/http"
+	"time"
 )
 
 // HTTPConfig is the container for HTTP server configuration settings.
@@ -33,6 +34,7 @@ func (*HTTPComponent) Settings() *HTTPConfig {
 // New produces a ServerFn bound to the given configuration.
 func (*HTTPComponent) New(_ context.Context, conf *HTTPConfig) (*http.Server, error) {
 	return &http.Server{
-		Addr: conf.Address,
+		Addr:              conf.Address,
+		ReadHeaderTimeout: 10 * time.Second,
 	}, nil
 }
