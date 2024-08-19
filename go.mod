@@ -7,7 +7,7 @@ require (
 	github.com/asecurityteam/component-expvar v0.2.1
 	github.com/asecurityteam/component-log v0.3.0
 	github.com/asecurityteam/component-signals v0.3.0
-	github.com/asecurityteam/component-stat v0.5.0
+	github.com/asecurityteam/component-stat v0.5.1
 	github.com/asecurityteam/logevent v1.6.1
 	github.com/asecurityteam/settings v1.0.0
 	github.com/go-chi/chi/v5 v5.0.10
