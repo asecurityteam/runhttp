@@ -9,11 +9,13 @@ require (
 	github.com/asecurityteam/component-signals v0.3.0
 	github.com/asecurityteam/component-stat v0.5.1
 	github.com/asecurityteam/logevent v1.6.1
+	github.com/asecurityteam/logevent/v2 v2.0.1
 	github.com/asecurityteam/settings v1.0.0
+	github.com/asecurityteam/settings/v2 v2.0.1
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang/mock v1.6.0
 	github.com/rs/xstats v0.0.0-20170813190920-c67367528e16
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
