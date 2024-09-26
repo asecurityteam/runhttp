@@ -8,9 +8,7 @@ require (
 	github.com/asecurityteam/component-log v0.4.0
 	github.com/asecurityteam/component-signals v0.4.0
 	github.com/asecurityteam/component-stat v0.5.2
-	github.com/asecurityteam/logevent v1.6.1
 	github.com/asecurityteam/logevent/v2 v2.0.1
-	github.com/asecurityteam/settings v1.0.0
 	github.com/asecurityteam/settings/v2 v2.0.1
 	github.com/go-chi/chi/v5 v5.1.0
 	github.com/golang/mock v1.6.0

@@ -10,7 +10,7 @@ import (
 	connstate "github.com/asecurityteam/component-connstate"
 	expvar "github.com/asecurityteam/component-expvar"
 	signals "github.com/asecurityteam/component-signals"
-	hlog "github.com/asecurityteam/logevent/http"
+	hlog "github.com/asecurityteam/logevent/v2/http"
 )
 
 // Runtime is the container for a restarting HTTP service. It will

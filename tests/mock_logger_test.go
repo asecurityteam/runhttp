@@ -11,7 +11,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 
-	logevent "github.com/asecurityteam/logevent"
+	logevent "github.com/asecurityteam/logevent/v2"
 )
 
 // MockLogger is a mock of Logger interface
