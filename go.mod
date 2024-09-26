@@ -3,11 +3,11 @@ module github.com/asecurityteam/runhttp
 go 1.22
 
 require (
-	github.com/asecurityteam/component-connstate v0.2.2
-	github.com/asecurityteam/component-expvar v0.2.1
-	github.com/asecurityteam/component-log v0.3.0
-	github.com/asecurityteam/component-signals v0.3.0
-	github.com/asecurityteam/component-stat v0.5.1
+	github.com/asecurityteam/component-connstate v0.2.3
+	github.com/asecurityteam/component-expvar v0.2.2
+	github.com/asecurityteam/component-log v0.4.0
+	github.com/asecurityteam/component-signals v0.4.0
+	github.com/asecurityteam/component-stat v0.5.2
 	github.com/asecurityteam/logevent v1.6.1
 	github.com/asecurityteam/logevent/v2 v2.0.1
 	github.com/asecurityteam/settings v1.0.0
