@@ -4,12 +4,13 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/rs/xstats"
+
 	connstate "github.com/asecurityteam/component-connstate"
 	expvar "github.com/asecurityteam/component-expvar"
 	log "github.com/asecurityteam/component-log"
 	signals "github.com/asecurityteam/component-signals"
 	stat "github.com/asecurityteam/component-stat"
-	"github.com/rs/xstats"
 )
 
 // Config is the top-level configuration container for
