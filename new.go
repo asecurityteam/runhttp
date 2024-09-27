@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/asecurityteam/settings"
+	"github.com/asecurityteam/settings/v2"
 )
 
 // New uses the given source to generate a configured Runtime instace.

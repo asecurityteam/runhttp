@@ -6,7 +6,7 @@ import (
 
 	"github.com/rs/xstats"
 
-	"github.com/asecurityteam/logevent"
+	"github.com/asecurityteam/logevent/v2"
 )
 
 // Logger is the project logging client interface. It is
