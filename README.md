@@ -1,6 +1,20 @@
 <a id="markdown-runhttp---prepackaged-runtime-helper-for-http" name="runhttp---prepackaged-runtime-helper-for-http"></a>
 # runhttp - Prepackaged Runtime Helper For HTTP
 [![GoDoc](https://godoc.org/github.com/asecurityteam/runhttp?status.svg)](https://godoc.org/github.com/asecurityteam/runhttp)
+
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=bugs)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=code_smells)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=coverage)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=ncloc)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=alert_status)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=security_rating)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=sqale_index)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=asecurityteam_runhttp&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=asecurityteam_runhttp)
+
+
 <!-- TOC -->
 
 - [runhttp - Prepackaged Runtime Helper For HTTP](#runhttp---prepackaged-runtime-helper-for-http)
