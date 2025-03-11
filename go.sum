@@ -10,6 +10,7 @@ github.com/asecurityteam/component-signals v0.4.0 h1:H0zmWl2Q6rOdOR4g6S7hHxYNV+i
 github.com/asecurityteam/component-signals v0.4.0/go.mod h1:32EgYqQ1m5LbVft7mg6u8E1GiPtXVRFVE1A2Spg+8lg=
 github.com/asecurityteam/component-stat v0.5.2 h1:euBm5pDrtjpSNeui/Q/nLGaakf9M8sYgPRrfH9pbVqQ=
 github.com/asecurityteam/component-stat v0.5.2/go.mod h1:+tQXQcS98gHT+8lM67Z8vuTaLruVOCvWCG/GKZAf1wg=
+
 github.com/asecurityteam/logevent/v2 v2.0.2 h1:dPPRNqnMgjvHTf/NxpvrgAjAPvA7AG/bF2FnCrDnoD0=
 github.com/asecurityteam/logevent/v2 v2.0.2/go.mod h1:cCjepcJdgAKoVfOTftnZ/Mp0WMsfwgaJ75UOjfKTxVU=
 github.com/asecurityteam/settings/v2 v2.0.2 h1:teHmCy80xrC1TRZWcfKrJq0Qm2Er3Zsuy8x5BnJ86OQ=
