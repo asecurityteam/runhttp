@@ -10,7 +10,7 @@ require (
 	github.com/asecurityteam/component-stat v0.5.2
 	github.com/asecurityteam/logevent/v2 v2.0.2
 	github.com/asecurityteam/settings/v2 v2.0.3
-	github.com/go-chi/chi/v5 v5.2.1
+	github.com/go-chi/chi/v5 v5.2.2
 	github.com/golang/mock v1.6.0
 	github.com/rs/xstats v0.0.0-20170813190920-c67367528e16
 	github.com/stretchr/testify v1.10.0
