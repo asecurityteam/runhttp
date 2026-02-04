@@ -1,6 +1,6 @@
 module github.com/asecurityteam/runhttp
 
-go 1.22
+go 1.25.7
 
 require (
 	github.com/asecurityteam/component-connstate v0.2.4
