@@ -12,11 +12,11 @@ type RouterConfig struct {
 // This version returns a mux from the chi project
 // as a convenience for cases where custom middleware or additional
 // routes need to be configured.
-func NewDefaultRouter(conf *RouterConfig) *chi.Mux {
-	router := chi.NewMux()
+func NewDefaultRouter(_ *RouterConfig) *http.ServeMux {
+	router := http.NewServeMux()
 	healthCheckHandler := &HealthCheckHandler{}
 
-	router.Get("/healthcheck", healthCheckHandler.Handle)
+	router.HandleFunc("/healthcheck", healthCheckHandler.Handle)
 
 	return router
 }
