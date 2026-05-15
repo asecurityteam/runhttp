@@ -1,7 +1,7 @@
 package runhttp
 
 import (
-	"net/http"
+	"github.com/go-chi/chi/v5"
 )
 
 // RouterConfig is used as a simple default for NewDefaultRouter
